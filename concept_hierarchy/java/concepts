@@ -1,0 +1,20 @@
+# Concept Hierarchy definition file
+# [NewConcept] to define a newconcept
+# [Incoming] <CurrentNode> <Parent1> <Parent2> and so on
+# [Outgoing] <CurrentNode> <Child1> <Child2> and so on
+# Note: Currently our program only supports parsing based on space. Multiple words in a concept
+# may be seperate using '-'. As a part of convention, the first letter of each word will be capital
+#
+[NewConcept] Programming-Languages 0.4
+[Incoming] Programming-Languages Root
+#
+[NewConcept] Java 0.6
+[Incoming] Java Programming-Languages
+#
+[NewConcept] Python 0.6
+[Incoming] Python Programming-Languages
+#
+[NewConcept] C++ 0.6
+[Incoming] C++ Programming-Languages
+#
+[Incoming] errorTest C++
