@@ -8,20 +8,20 @@ nlp = spacy.load('en_core_web_sm')
 
 class TextRank():
     """Extract keywords from text"""
-    
+
     def __init__(self):
         self.d = 0.85 # damping coefficient, usually is .85
         self.min_diff = 1e-5 # convergence threshold
         self.steps = 10 # iteration steps
         self.node_weight = None # save keywords and its weight
 
-    
-    def set_stopwords(self, stopwords):  
+
+    def set_stopwords(self, stopwords):
         """Set stop words"""
         for word in STOP_WORDS.union(set(stopwords)):
             lexeme = nlp.vocab[word]
             lexeme.is_stop = True
-    
+
     def sentence_segment(self, doc, candidate_pos, lower):
         """Store those words only in cadidate_pos"""
         sentences = []
@@ -36,7 +36,7 @@ class TextRank():
                         selected_words.append(token.text)
             sentences.append(selected_words)
         return sentences
-        
+
     def get_vocab(self, sentences):
         """Get all tokens"""
         vocab = OrderedDict()
@@ -47,7 +47,7 @@ class TextRank():
                     vocab[word] = i
                     i += 1
         return vocab
-    
+
     def get_token_pairs(self, window_size, sentences):
         """Build token_pairs from windows in sentences"""
         token_pairs = list()
@@ -60,10 +60,10 @@ class TextRank():
                     if pair not in token_pairs:
                         token_pairs.append(pair)
         return token_pairs
-        
+
     def symmetrize(self, a):
         return a + a.T - np.diag(a.diagonal())
-    
+
     def get_matrix(self, vocab, token_pairs):
         """Get normalized matrix"""
         # Build matrix
@@ -72,17 +72,17 @@ class TextRank():
         for word1, word2 in token_pairs:
             i, j = vocab[word1], vocab[word2]
             g[i][j] = 1
-            
+
         # Get Symmeric matrix
         g = self.symmetrize(g)
-        
+
         # Normalize matrix by column
         norm = np.sum(g, axis=0)
         g_norm = np.divide(g, norm, where=norm!=0) # this is ignore the 0 element in norm
-        
+
         return g_norm
 
-    
+
     def get_keywords(self, number=10):
         """Print top number keywords"""
         keyword_dict = {}
@@ -93,35 +93,35 @@ class TextRank():
             if i > number:
                 break
         return keyword_dict
-	
-        
-        
-    def analyze(self, text, 
-                candidate_pos=['NOUN', 'PROPN'], 
+
+
+
+    def analyze(self, text,
+                candidate_pos=['NOUN', 'PROPN'],
                 window_size=4, lower=False, stopwords=list()):
         """Main function to analyze text"""
-        
+
         # Set stop words
         self.set_stopwords(stopwords)
-        
+
         # Pare text by spaCy
         doc = nlp(text)
-        
+
         # Filter sentences
         sentences = self.sentence_segment(doc, candidate_pos, lower) # list of list of words
-        
+
         # Build vocabulary
         vocab = self.get_vocab(sentences)
-        
+
         # Get token_pairs from windows
         token_pairs = self.get_token_pairs(window_size, sentences)
-        
+
         # Get normalized matrix
         g = self.get_matrix(vocab, token_pairs)
-        
+
         # Initionlization for weight(pagerank value)
         pr = np.array([1] * len(vocab))
-        
+
         # Iteration
         previous_pr = 0
         for epoch in range(self.steps):
@@ -135,7 +135,7 @@ class TextRank():
         node_weight = dict()
         for word, index in vocab.items():
             node_weight[word] = pr[index]
-        
+
         self.node_weight = node_weight
 
     def read(self,path,file_name):
@@ -149,12 +149,12 @@ class TextRank():
         # remove special characters and digits
         text=re.sub("(\\d|\\W)+"," ",text)
         return text
-		
 
-"""
+
+
 tr4w = TextRank()
-path = '/home/ash/Desktop/POC-1/keyword-extraction/fetch-content/'
-for i in range(1,6):
+path = '/home/sukhad/Workspace/GithHub/contextual-ads/keyword_extraction/fetch-content/'
+for i in range(1,3):
 
 	reader = open(path + str(i), 'r')
 
@@ -169,16 +169,16 @@ for i in range(1,6):
 	text=re.sub("(\\d|\\W)+"," ",text)
 
 	tr4w.analyze(text, candidate_pos = ['NOUN', 'PROPN'], window_size=4, lower=False)
-	
-	print('\n***** Keywords for article number: ' + str(i)  + "******\n")
-		
-	keyword_dict = tr4w.get_keywords(10)
-	matches = ''
-	for key in keyword_dict:
-		#print(key + ': ' + str(keyword_dict[key]))
-		matches = matches + key + ' '  + str(round(keyword_dict[key],2)) + ','
 
-	writer = open('matches', 'a')
-	writer.write('\n# Keywords for article: ' + str(i) + '\n')
-	writer.write(matches)
-"""
+	print('\n***** Keywords for article number: ' + str(i)  + "******\n")
+
+	keyword_dict = tr4w.get_keywords(10)
+	print(keyword_dict)
+#	matches = ''
+#	for key in keyword_dict:
+		#print(key + ': ' + str(keyword_dict[key]))
+#		matches = matches + key + ' '  + str(round(keyword_dict[key],2)) + ','
+
+#	writer = open('matches', 'a')
+#	writer.write('\n# Keywords for article: ' + str(i) + '\n')
+#	writer.write(matches)

@@ -45,6 +45,8 @@ def create_node():
         current_node.parent = parent
         parent_node.children.append(current_node)
 
+        # TODO:  write updated cf to json file or mongodb
+
     return render_template('./node_create.html',error_msg=error_msg, **request.form)
 
 @app.route('/createProduct')
