@@ -38,7 +38,7 @@ def create_node():
     synonyms = request.form.get('synonyms').split(',')
 
     parent_node = ch.lookup.get(parent)
-    if current_node is None:
+    if parent_node is None:
         error_msg = "Couldn't find parent node"
     else:
         current_node = Node(name)
