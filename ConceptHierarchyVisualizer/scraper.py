@@ -20,7 +20,9 @@ class URLOpener(FancyURLopener):
 class Scraper():
 
     def __init__(self):
-        self.driver = webdriver.Firefox(executable_path='/home/sukhad/Downloads/geckodriver')
+        profile = webdriver.FirefoxProfile()
+        profile.set_preference("general.useragent.override","Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0")
+        self.driver = webdriver.Firefox(profile,executable_path='/home/sukhad/Downloads/geckodriver')
 
     def _tag_visible(self, element):
         if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:

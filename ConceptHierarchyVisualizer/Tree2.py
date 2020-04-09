@@ -1,5 +1,9 @@
+
 import collections
 import time
+
+from random import randint
+from time import sleep
 
 from scraper import Scraper
 from scrape_synonyms import SearchScraper
@@ -116,6 +120,10 @@ class Tree():
 		i = 1
 		while dq:
 
+			# this will be removed in future
+			if i==30:
+				return
+
 			if i%15==0:
 				print("Hey!! We are gonna pull a little sneaky on Google. I am starting a new session")
 				del scraper
@@ -127,11 +135,14 @@ class Tree():
 
 			print(curr.name)
 			if (curr is not self.root) and (not curr._visited):
-				i++
+				i += 1
 				links = curr.get_links(scraper)
 				with open("search_links.txt","a+") as f:
 					f.write(curr.name+"\n")
 					f.write(str(links)+"\n")
+
+					sleep(randint(2,10))
+
 			else:
 				print("already-visited")
 
