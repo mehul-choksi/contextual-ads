@@ -1,50 +1,20 @@
 import collections
 import time
-
-from scraper import Scraper
-from scrape_synonyms import SearchScraper
-
 class Node():
-
-	def __init__(self,name='',parent='',children=set(), confidence=None):
+	def __init__(self,name='',parent='',children=set(),synonyms=set(),confidence=0,level=0):
 		self.name = name
 		self.parent = parent
 		self.children = children
+		self.synonyms = synonyms
 		self.confidence = confidence
-		self.synonyms = dict()
-		self._visited = False
+		self.level = level
 
-	def get_synonyms(self,  searchScraper):
-		scraper = Scraper()
-		print("==",self.name,"==")
-		if self.parent == "root":
-			query = self.name + " blog"
+	# logic to set the confidence value of each node
+	def set_confidence(self):
+		if self.level == 0:
+			self.confidence = 0.2
 		else:
-			query = self.name + " " + self.parent + " blog"
-		links = searchScraper.get_search_results_links(query)
-		keyword_list = []
-		for link in links:
-			print(link)
-			try:
-				keywords = scraper.get_keywords(site=link)
-				print(keywords.keys())
-				keyword_list.append(keywords.keys())
-			except:
-				continue
-		print(keyword_list)
-
-	def get_links(self, scraper):
-		name = self.name.replace("&","and")
-		parent = self.parent.replace("&","and")
-		query = ""
-		if parent == "root":
-			query = name + " blog"
-		else:
-			query = name + " " + parent + " blog"
-
-		links = scraper.get_search_results_links(query)
-		#print(links)
-		return links
+			self.confidence = 1 - 0.5**self.level
 
 	def print_node(self):
 		return 'Name: '+self.name+' Children: ' + ' Parent: ' + self.parent + str([node.name for node in self.children])
@@ -53,11 +23,12 @@ class Node():
 class Tree():
 
 	def __init__(self):
-		self.root = Node(name='root',children=set())
+		self.root = Node(name='root',children=set(),confidence=0.2,level=0)
 		self.source_file = 'tags.txt'
 		self.map = {}
 		self.map['root'] = self.root
 		self.jsonStr = ""
+		#self.logger = open('logs.txt', 'a')
 
 	def create_node(self,name,parent):
 		try:
@@ -65,12 +36,15 @@ class Tree():
 			return node
 		except:
 			node = Node(name,parent=parent.name)
+			node.level = parent.level + 1
+			node.set_confidence()
 			parent.children.add(node)
 			node.parent = parent.name
 			self.map[name] = node
 			return node
 
 	def read_and_build(self):
+
 		reader = open(self.source_file)
 		root = self.root
 		for line in reader:
@@ -81,11 +55,9 @@ class Tree():
 
 			n = len(tags)
 
-
 			curr = self.create_node(tags[0],root)
 			print(root.name + '->' + curr.name)
-			#for i in range(1,min(3,n)):	#visualizer mode
-			for i in range(1,n):		#mapper mode
+			for i in range(1,n):
 				node = self.create_node(tags[i],curr)
 				curr.children.add(node)
 				print(curr.name + '->' + node.name)
@@ -93,66 +65,60 @@ class Tree():
 
 		print('Root: ' + str([child.name for child in root.children]))
 
-
+		#ca = self.map['Clothing & Accessories']
+		#if ca in ca.children:
+		#	ca.children.remove(ca)
+		#print('Clothes: ' + str([child.name for child in ca.children]))
+		#boys = self.map['Boys']
+		#boys.children.remove(boys)
+		#print('Boys: ' + str([child.name for child in boys.children]))
 	def bfs(self):
-
-		# this to be commented later
-		with open("search_links.txt","r") as f:
-			text = f.read().split('\n')
-			i = 0
-			while i<len(text)-1:
-				self.map[text[i]]._visited = True
-				i += 2
-
-		searchScraper = SearchScraper()
-		scraper = Scraper()
-
+		#print('bfs')
 		root = self.root
 		dq = collections.deque()
 
 		dq.appendleft(root)
 		visited = set()
 
-		i = 1
 		while dq:
-
-			if i%15==0:
-				print("Hey!! We are gonna pull a little sneaky on Google. I am starting a new session")
-				del scraper
-				scraper = Scraper()
-
+			#time.sleep(0.01)
 			curr = dq.popleft()
 			if curr in curr.children:
 				curr.children.remove(curr)	#Remove child from itself
-
+				#print('Removed redundancy')
 			print(curr.name)
-			if (curr is not self.root) and (not curr._visited):
-				i++
-				links = curr.get_links(scraper)
-				with open("search_links.txt","a+") as f:
-					f.write(curr.name+"\n")
-					f.write(str(links)+"\n")
-			else:
-				print("already-visited")
 
 			currCh = curr.children
+			#print(str([child.name for child in currCh]))
 			filteredCh = set()
 
 			for child in currCh:
 				if child.parent != curr.name:
+					#print('Parent of ', child.name , ' is ', child.parent)
 					continue
 				else:
+					#print(child.name, ' is child of ', curr.name)
 					dq.appendleft(child)
 					filteredCh.add(child)
 			curr.children = filteredCh
 
+		#print('bfs end')
 
 	def treeToJSON(self,curr):
 		self.jsonStr += ",{\"name\":" + "\"" + curr.name + "\","
+		#print("{\"Name\":" + "\"" + curr.name + "\",")
+		self.jsonStr += "\"parent\":" + "\"" + curr.parent + "\","
+		#print("\"Parent\":" + "\"" + curr.parent + "\",")
+		self.jsonStr += "\"confidence\":" + str(curr.confidence) + ","
 
-		self.jsonStr += "\"narent\":" + "\"" + curr.parent + "\","
+		self.jsonStr += "\"synonyms\":["
+		for syn in curr.synonyms:
+			self.jsonStr += "\"" + syn + "\""
+		self.jsonStr += "],"
+
 		if len(curr.children) > 0:
 			self.jsonStr += "\"children\":["
+			# Children
 			currChildren = curr.children
 
 			for c in currChildren:
