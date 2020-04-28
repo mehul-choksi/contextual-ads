@@ -1,0 +1,67 @@
+# Concept Hierarchy definition file
+# [NewConcept] to define a newconcept
+# [Incoming] <CurrentNode> <Parent1> <Parent2> and so on
+# [Outgoing] <CurrentNode> <Child1> <Child2> and so on
+# Note: Currently our program only supports parsing based on space. Multiple words in a concept
+# may be seperate using '-'. As a part of convention, the first letter of each word will be capital
+#
+# Root is already defined, no need to redefine it
+#
+## To do: define sub hierarchies of TV,food,furniture, 
+#Confidence value used: Parent.confidence + (0.5)^(depth level)
+[NewConcept] Electronics 0.5 
+[NewConcept] Furniture 0.5 
+[NewConcept] Food 0.5 
+[NewConcept] Programming-languages 0.5
+# Child nodes of programming languages
+[NewConcept] Java 0.75
+[NewConcept] C++ 0.75
+[NewConcept] Python 0.75
+[NewConcept] C 0.75
+[NewConcept] Javascript 0.75
+[NewConcept] Haskel 0.75
+#
+# Child nodes of electronics
+[NewConcept] Mobile 0.75
+[NewConcept] Laptop 0.75
+[NewConcept] TV 0.75
+# Child nodes of mobile
+[NewConcept] Android 0.875
+[NewConcept] iOS 0.875
+# Child nodes of laptop
+[NewConcept] Windows 0.875
+[NewConcept] Ubuntu 0.875
+[NewConcept] Mac 0.875
+# Child nodes of food
+[NewConcept] Instant 0.75
+[NewConcept] Raw 0.75
+# Child nodes of furniture
+[NewConcept] Bed 0.75
+[NewConcept] Cupboard 0.75
+[NewConcept] Rack 0.75
+# Establishing links
+#
+[Outgoing] Root Electronics
+[Outgoing] Root Furniture
+[Outgoing] Root Food
+[Outgoing] Root Programming-languages
+#
+[Outgoing] Electronics Mobile
+[Outgoing] Electronics Laptop
+[Outgoing] Electronics TV
+#
+[Outgoing] Mobile Android
+[Outgoing] Mobile iOS 
+#
+[Outgoing] Laptop Windows
+[Outgoing] Laptop Ubuntu
+[Outgoing] Laptop Mac
+#
+[Outgoing] Food Instant
+[Outgoing] Food Raw
+#
+[Outgoing] Furniture Bed
+[Outgoing] Furniture Cupboard
+[Outgoing] Furniture Rack
+#
+

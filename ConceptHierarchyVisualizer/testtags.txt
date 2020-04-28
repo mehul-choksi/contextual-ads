@@ -1,2 +1,0 @@
-'Clothing & Accessories', 'Boys', 'Jeans'
-'Clothing & Accessories', 'Boys', 'Sportswear', 'Athletic Socks'

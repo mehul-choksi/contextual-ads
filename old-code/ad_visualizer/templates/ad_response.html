@@ -1,0 +1,63 @@
+<html>
+<head>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+	<style>
+		body {
+		font-family: Georgia;
+		padding: 20px;
+		background: #f1f1f1;
+	}
+
+	.header {
+		padding: 30px;
+		font-size: 40px;
+		text-align: center;
+		background: #00b3b3;
+
+	}
+
+	.leftcolumn {
+		float: left;
+		width: 70%;
+	}
+
+	.recentPost{
+		background : #ffffff;
+		padding : 20px;
+		margin-top:20px;
+		height:250px;
+	}
+
+	.recentTitle{
+		background:#ade6d8;
+		padding:10px;
+	}
+
+	.imageIcon {
+		background-color: #aaa;
+		float:right;
+		height:100px;
+		width:100px;
+	}
+	</style>
+</head>
+<body>
+	<div class="row">
+		<div class="leftcolumn" >
+{% for ad in ads %}
+	<div class="recentPost" style="cursor: pointer;" onclick="window.location='{{ad.product_url}}';">
+				<div class = "recentTitle">
+					<h2> {{ad.title}} </h2>
+				</div>
+				<h5> Get this product for only {{ad.price}} </h5>
+					<div class="imageIcon">
+						<img src= {{ad.image_url}} alt={{ad.image_name}} height="100px" width="100px">
+					</div>
+					<p> {{ad.description}}
+					</p>
+	</div>
+{% endfor %}
+</div></div></body></html>

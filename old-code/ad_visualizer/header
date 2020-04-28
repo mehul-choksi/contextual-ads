@@ -1,0 +1,50 @@
+<html>
+<head>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+	<style>
+		body {
+		font-family: Georgia;
+		padding: 20px;
+		background: #f1f1f1;
+	}
+
+	.header {
+		padding: 30px;
+		font-size: 40px;
+		text-align: center;
+		background: #00b3b3;
+
+	}
+
+	.leftcolumn { 
+		float: left;
+		width: 70%;
+	}
+
+	.recentPost{
+		background : #ffffff;
+		padding : 20px;
+		margin-top:20px;
+		height:250px;
+	}
+
+	.recentTitle{
+		background:#ade6d8;
+		padding:10px;
+	}
+
+	.imageIcon {
+		background-color: #aaa;
+		float:right;
+		height:100px;
+		width:100px;
+	}	
+	</style>
+</head>
+<body>
+	<div class="row">
+		<div class="leftcolumn" >
+
